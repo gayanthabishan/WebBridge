@@ -193,7 +193,7 @@ These surface to JS as rejected Promises with `{ code, message }`.
 
 ---
 
-## Roadmap (optional)
+## Roadmap
 
 - Async handler variant (allow `await` inside handlers)
 - Method namespaces per vertical (e.g., `events.createBooking`)
