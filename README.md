@@ -150,7 +150,7 @@ These surface to JS as rejected Promises with `{ code, message }`.
 
 ---
 
-## Envelope shapes (copy-paste friendly)
+## Envelope shapes
 
 ```json
 // Request (JS → Native)
