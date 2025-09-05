@@ -48,10 +48,10 @@ sequenceDiagram
 
 **Architecture**  
 ```mermaid
-graph TD
-  ThirdPartyWeb[3rd-party Mini App (HTML/JS/CSS)] -- PickMe.invoke --> Bridge["WebBridge (Swift)\nHandlers Map"]
-  Bridge -- calls --> NativeCore["Native Core Modules\n(Auth, Payments, API, Analytics)"]
-  Bridge -- emit() --> ThirdPartyWeb
+flowchart TD
+  ThirdPartyWeb["3rd-party Mini App (HTML/JS/CSS)"] -->|PickMe.invoke| Bridge["WebBridge (Swift)<br/>Handlers Map"]
+  Bridge -->|calls| NativeCore["Native Core Modules<br/>(Auth, Payments, API, Analytics)"]
+  Bridge -->|emit()| ThirdPartyWeb
 ```
 
 ---
