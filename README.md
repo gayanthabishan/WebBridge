@@ -28,8 +28,9 @@ This demo ships a minimal **WebBridge** that exposes a **small set of native han
 
 ---
 
-## How it works (at a glance)
+## How it works
 
+**Flow** 
 ```mermaid
 sequenceDiagram
   participant JS as Web (Mini App)
