@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>PickMe — Bridge Demo</title>
+  <style>
+    :root {
+      --primary: #fad376; --text: #1a1a1a; --muted: #666;
+      --radius: 14px; --shadow: 0 10px 30px rgba(0,0,0,.08);
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, 'Helvetica Neue', Arial;
+      background:#f5f5f5; margin:0; padding:20px; color:var(--text); }
+    .card { max-width: 420px; margin: 0 auto; background:#fff; border-radius: 20px;
+      box-shadow: var(--shadow); overflow:hidden; }
+    .head { padding:22px 20px; background: linear-gradient(135deg, #fad376 0%, #f5c842 100%); }
+    .title { margin:0; font-size:20px; font-weight:800; letter-spacing:-.3px; }
+    .sub { margin:6px 0 0; color:#2d2d2d; font-weight:600; opacity:.9; }
+    .body { padding:18px 20px 22px; }
+    .row { display:flex; gap:10px; align-items:center; }
+    input { flex:1; padding:12px 14px; border:2px solid #f0f0f0; border-radius: var(--radius);
+      font-size:16px; background:#fafafa; }
+    button { padding:12px 16px; border-radius: var(--radius); border:none; font-weight:800;
+      background: linear-gradient(135deg, #fad376 0%, #f5c842 100%); color:#1a1a1a; cursor:pointer; }
+    button:active { transform: scale(.98); }
+    pre { background:#fbfbfb; border:1px solid #f1f1f1; border-radius: 12px; padding:12px; overflow:auto; }
+    .hint { color: var(--muted); font-size: 14px; margin-top: 12px; }
+  </style>
+
+  <script>
+  (function(){
+    const pending = Object.create(null);
+    let seq = 0;
+
+    function isObj(x){ return typeof x === 'object' && x !== null; }
+
+    window.PickMe = {
+      invoke(method, payload){
+        return new Promise((resolve, reject) => {
+          const id = "req_" + (++seq);
+          pending[id] = { resolve, reject };
+          // Always send a JSON-serializable envelope
+          try {
+            window.webkit?.messageHandlers?.pickme?.postMessage({ id, method, payload: isObj(payload) ? payload : {} });
+          } catch (e) {
+            delete pending[id];
+            reject({ code: "NATIVE_BRIDGE_ERROR", message: String(e) });
+          }
+        });
+      },
+      // Native calls this with an envelope to resolve/reject the Promise
+      _resolveEnvelope(env){
+        const { id, ok, result, error } = env || {};
+        const p = pending[id]; if(!p) return;
+        delete pending[id];
+        ok ? p.resolve(result) : p.reject(error || { code: "UNKNOWN", message: "Unknown error" });
+      },
+      // Optional: native can push events into the page (not needed for the demo)
+      _onEvent(evt){
+        console.log("[Native Event]", evt);
+      }
+    };
+  })();
+  </script>
+</head>
+
+<body>
+  <div class="card">
+    <div class="head">
+      <h1 class="title">PickMe Bridge Demo</h1>
+      <p class="sub">Single function, two-way communication</p>
+    </div>
+    <div class="body">
+      <div class="row" style="margin-bottom:12px;">
+        <input id="name" placeholder="Enter your name" value="Bishan" />
+        <button id="btn" type="button">Say Hello</button>
+      </div>
+      <pre id="out">Tap “Say Hello” to call native…</pre>
+      <div class="hint">This calls <code>PickMe.invoke("demo", { name })</code>, native replies with <code>{ message }</code>.</div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    $("btn").addEventListener("click", async () => {
+      $("out").textContent = "Calling native…";
+      try {
+        const name = $("name").value.trim();
+        const res = await window.PickMe.invoke("demo", { name });
+        $("out").textContent = res?.message ?? "(no message)";
+      } catch (e) {
+        $("out").textContent = `Error: ${e?.code || ""} ${e?.message || e}`;
+      }
+    });
+  </script>
+</body>
+</html>

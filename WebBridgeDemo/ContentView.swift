@@ -2,20 +2,14 @@
 //  ContentView.swift
 //  WebBridgeDemo
 //
-//  Created by Bishanm on 2025-08-30.
+//  Created by Bishanm on 2025-09-04.
 //
 
 import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        WebBridgeView(htmlFileName: "bridge_demo")
     }
 }
 
