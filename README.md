@@ -1,4 +1,4 @@
-# PickMe Web Bridge — Mini App Demo
+# Web Bridge — Mini App Demo
 
 > A tiny, production-ish bridge that lets **third-party web mini-apps** talk to our **native core modules** through a clean, JSON-only API. One function contract. Two-way communication. Easy to hand off.
 
